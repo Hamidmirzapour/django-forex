@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    | Portfolio
+{% endblock title %}
+
+{% block content %}
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show mb-5" role="alert">
+                <strong>Congrats!</strong> {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form class="form-inline my-2 my-lg-0" action="{% url 'portfolio' %}" method="POST">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" placeholder="Base Currency" aria-label="Search" name='base_currency'>
+        <input class="form-control mr-sm-2" type="text" placeholder="Quote Currency" aria-label="Search" name='quote_currency'>
+        <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Add To Portfolio</button>
+    </form>
+
+    {% if output %}
+        <table class="table table-responsive mt-5">
+                <thead class="thead-dark">
+                    <tr>
+                    <th scope="col">Base Symbol</th>
+                    <th scope="col">Quote Symbol</th>
+                    <th scope="col">Exchange Rate</th>
+                    <th scope="col">Ask Price</th>
+                    <th scope="col">Bid Price</th>
+                    <th scope="col">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for o in output %}
+                    <tr>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '1. From_Currency Code' %}
+                                        {{ v }}
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '3. To_Currency Code' %}
+                                        {{ v }}
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '5. Exchange Rate' %}
+                                        {{ v }}<sub> USD</sub>
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '9. Ask Price' %}
+                                        {{ v }}<sub> USD</sub>
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '8. Bid Price' %}
+                                        {{ v }}<sub> USD</sub>
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for key, value in o.items %}
+                                {% for k, v in value.items %}
+                                    {% ifequal k '6. Last Refreshed' %}
+                                        {{ v }}
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                    <tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if portfolio %}
+                {% for portfo in portfolio %}
+                    <a class="btn btn-danger mr-2" href="{% url 'delete' portfo.id %}">Delete {{ portfo }} </a>
+                {% endfor %}
+            {% endif %}
+    {% else %}
+        <p>There is no currencies in portfolio. Please add one.</p>
+    {% endif %}
+{% endblock content %}
